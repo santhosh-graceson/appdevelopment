@@ -3,7 +3,6 @@ import websocket
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import matplotlib.pyplot as plt
 
 st.title("Real Time Data Streaming")
 websocket.enableTrace(True)
