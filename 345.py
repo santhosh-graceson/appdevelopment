@@ -31,8 +31,8 @@ while True:
         df = df.append({"time": time, "temperature": temperature}, ignore_index=True)
         df['temperature'] = pd.to_numeric(df['temperature'])
 
-        if len(df) > 400:
-            df = df.tail(400)
+        if len(df) > 4000:
+            df = df.tail(4000)
         
         chart.empty()
 
