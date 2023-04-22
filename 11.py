@@ -4,7 +4,6 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 import altair as alt
-st.set_page_config(layout="centered", initial_sidebar_state="expanded")
 st.title("Real Time Data Streaming")
 websocket.enableTrace(True)
 ws = websocket.WebSocket()
