@@ -13,7 +13,7 @@ st.image("https://i.ibb.co/Fm8Gw54/Ai-Den-Medical-Rev-3-Mini.png",width=100)
 def local_css(file_name):
     with open(file_name) as f:
         st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
-local_css("https://github.com/santhosh-graceson/appdevelopment/blob/main/style.css")
+local_css(r"https://github.com/santhosh-graceson/appdevelopment/blob/main/style.css")
 part2,part3=st.columns([15,3])
 col1,col2,col3,col4,col5=part2.columns([3,1,2,10,2])
 col6,col7,col8,col9,col10=part3.columns([1,1,1,1,1])
