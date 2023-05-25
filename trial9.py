@@ -1,3 +1,4 @@
+#Importing packages
 import json
 import websocket
 import streamlit as st
@@ -8,8 +9,13 @@ import numpy as np
 from datetime import datetime
 from PIL import Image
 RANGE=10000
+
+#Page setup
 st.set_page_config(layout ="wide")
 st.image("https://i.ibb.co/q059f9Q/Ai-Den-Medical-Rev-3-Mini-white.png",width=100)
+
+
+#First row configuration
 part2,part3=st.columns([15,3])
 col1,col2,col3,col4,col5=part2.columns([3,1,2,10,2])
 col6,col7,col8,col9=part3.columns([1,1,1,1])
@@ -22,7 +28,6 @@ with col2:
 with col6:
     st.markdown("<p style='font-size:1px;text-align: center;gap: 0rem;padding:  0;color: #070D1C;font-synthesis: bold;'>1</p>", unsafe_allow_html=True)
 with col6:
-    # image3 = Image.open(r"C:\Users\mpoor\Downloads\wifi-icon-white.png")
     plug_icon= st.image("https://i.ibb.co/nRmgTmw/wifi-icon-white.png",width=60)
 with col7:
     st.markdown("<p style='font-size:1px;text-align: center;gap: 0rem;padding:  0;color: #070D1C;font-synthesis: bold;'>1</p>", unsafe_allow_html=True)
@@ -52,21 +57,23 @@ with col1:
     b=x.strftime("%I:%M")
     st.markdown("<p style='font-size:16px;gap: 0rem;padding:  0;  text-align: center;color: #FFFFFF;font-synthesis: bold;'>{}</p>".format(b), unsafe_allow_html=True)
 with col4:
-    st.markdown("<h1 style='font-size:32px;text-align: center; color: #000000;'>Patient is Ventilated</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='font-size:28px;text-align: center; color: #000000;'>Patient is Ventilated</h1>", unsafe_allow_html=True)
 with col5:
      st.markdown("<h1 style='font-size:20px;text-align: center; color: #FFFFFF;'>Bi-Level</h1>", unsafe_allow_html=True)
 
+#Second Row Configuration
 First_Parameter = st.markdown("<h1 style='font-size:20px;text-align: left; color: #ff904f;width: 940px;'>INSPIRATION FLOW</h1>", unsafe_allow_html=True)
 chart_, values_container = st.columns([3, 1])
 chart_container,null1 = chart_.columns([99,1])
-chart2_container,null1=chart_.columns([99,1])
-
+chart_1, values_container1 = st.columns([3, 1])
+chart_container1,null1 = chart_.columns([99,1])
 insp_flow_container,awp_container = values_container.columns(2)
 awp_container1,awp_container2=values_container.columns(2)
-
 awp_container3, awp_container4= values_container.columns(2)
-awp_container5, awp_container6 = values_container.columns(2)
+awp_container5, awp_container6 = values_container1.columns(2)
 chart = chart_container.empty()
+chart1=chart_container1.empty()
+#Websocket connection establishment
 websocket.enableTrace(True)
 ws = websocket.WebSocket()
 ws1 = websocket.WebSocket()
@@ -75,60 +82,81 @@ ws1.connect("wss://fr21il5ko7.execute-api.us-west-2.amazonaws.com/production")
 df_Inspiration_Flow = pd.DataFrame(columns=["Units","Inspiration_Flow"])
 a=[]
 n=0
+
+#Creating containers for the grid
 last_insp_flow = insp_flow_container.empty()
 last_insp_flow.markdown("<h2 style='font-size:19px;gap: 0.1rem;color: #80ff80;font-synthesis: bold;text-align:center;fill:#000000'>Ppeak</h2>", unsafe_allow_html=True)
 last_insp_flow_value = insp_flow_container.empty() 
-last_insp_flow_value.markdown("<p style='font-size:36px;color: #80ff80;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
+last_insp_flow_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #80ff80;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
 
 last_awp = awp_container.empty()
 last_awp.markdown("<h2 style='font-size:19px;gap: 0.1rem;color: #FFFFFF;font-synthesis: bold;text-align:center;'>O2</h2>", unsafe_allow_html=True)
 last_awp_value = awp_container.empty()
-last_awp_value.markdown("<p style='font-size:36px;color: #FFFFFF;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
+last_awp_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #FFFFFF;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
 
 last_awp1 = awp_container1.empty()
 last_awp1.markdown("<h2 style='font-size:19px;gap: 0.1rem;color: #ff904f;font-synthesis: bold;text-align:center;'>Flow</h2>", unsafe_allow_html=True)
 last_awp1_value = awp_container1.empty()
-last_awp1_value.markdown("<p style='font-size:36px;color: #ff904f;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
+last_awp1_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #ff904f;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
 
 last_awp2 = awp_container2.empty()
 last_awp2.markdown("<h2 style='font-size:19px;gap: 0.1rem;color: #ff904f;font-synthesis: bold;text-align:center;'>RR</h2>", unsafe_allow_html=True)
 last_awp2_value = awp_container2.empty()
-last_awp2_value.markdown("<p style='font-size:36px;color: #ff904f;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
+last_awp2_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #ff904f;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
 
 last_awp3 = awp_container3.empty()
 last_awp3.markdown("<h2 style='font-size:19px;gap: 0.1rem;color: #ff904f;font-synthesis: bold;text-align:center;'>I:E</h2>", unsafe_allow_html=True)
 last_awp3_value = awp_container3.empty()
-last_awp3_value.markdown("<p style='font-size:36px;color: #ff904f;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
+last_awp3_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #ff904f;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
 
 last_awp4 = awp_container4.empty()
 last_awp4.markdown("<h2 style='font-size:19px;gap: 0.1rem;color: #80ff80;font-synthesis: bold;text-align:center;'>PEEP</h2>", unsafe_allow_html=True)
 last_awp4_value = awp_container4.empty()
-last_awp4_value.markdown("<p style='font-size:36px;color: #80ff80;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
+last_awp4_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #80ff80;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
 
 last_awp5 = awp_container5.empty()
 last_awp5.markdown("<h2 style='font-size:19px;gap: 0.1rem;color: #87CEEB;font-synthesis: bold;text-align:center;'>VTi</h2>", unsafe_allow_html=True)
 last_awp5_value = awp_container5.empty()
-last_awp5_value.markdown("<p style='font-size:36px;color: #87CEEB;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
+last_awp5_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #87CEEB;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
 last_awp6 = awp_container6.empty()
 last_awp6.markdown("<h2 style='font-size:19px;gap: 0.1rem;color: #87CEEB;font-synthesis: bold;text-align:center;'>VTe</h2>", unsafe_allow_html=True)
 last_awp6_value = awp_container6.empty()
-last_awp6_value.markdown("<p style='font-size:36px;color: #87CEEB;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
+last_awp6_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #87CEEB;font-synthesis: bold;text-align:center;'></p>", unsafe_allow_html=True)
+
 counter=0
+
+#Filling the gap for the first row  and the second row grid portion column
+
+
 st.markdown("""
     <style> 
-    div.css-ocqkz7.e1tzin5v3{
-        gap: 0.1rem;
-    }
-    </style>
-    """,unsafe_allow_html=True)
-st.markdown("""
-    <style>
-    div.css-peenxw.e1tzin5v0{
-        gap: 0.1rem;
+    div.css-ocqkz7.e1tzin5v3:nth-child(1),div.css-ocqkz7.e1tzin5v3:nth-child(2),div.css-ocqkz7.e1tzin5v3:nth-child(3){
+       column-gap: 0.1rem;
     }
     </style>
     """,unsafe_allow_html=True)
 
+st.markdown("""
+    <style>
+    div.css-1r2k5ly.e1tzin5v0{
+        row-gap: 0.1rem;
+    }
+    </style>
+    """,unsafe_allow_html=True)
+
+#Filling the gap for grid portion row
+st.markdown("""
+    <style>
+    div.css-peenxw.e1tzin5v0{
+        row-gap: 0.1rem;
+    }
+    </style>
+    """,unsafe_allow_html=True)
+
+
+
+
+#Background colour for Ppeak
 st.markdown("""
     <style>
    h2#ppeak{
@@ -137,6 +165,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
+#Background colour for Flow
 st.markdown("""
     <style>
    h2#flow{
@@ -145,6 +174,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
+#Background colour for RR
 st.markdown("""
     <style>
    h2#rr{
@@ -153,6 +183,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
+#Background colour for I:E
 st.markdown("""
     <style>
    h2#i-e{
@@ -161,6 +192,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
+#Background colour for PEEP
 st.markdown("""
     <style>
    h2#peep{
@@ -169,6 +201,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
+#Background colour for VTi
 st.markdown("""
     <style>
    h2#vti{
@@ -177,6 +210,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
+#Background colour for VTe
 st.markdown("""
     <style>
    h2#vte{
@@ -185,6 +219,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
+#Background colour for p 
 st.markdown("""
     <style>
    p{
@@ -193,6 +228,7 @@ background-color: #070D1C;
     </style>
     """,unsafe_allow_html=True)
 
+#Background colour for O2
 st.markdown("""
     <style>
    h2#o2{
@@ -201,65 +237,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
-st.markdown("""
-    <style>
-   div.css-1rrbo1k.e1tzin5v1{
-    background-color: #070D1C;
-    padding: 0;
-    vertical-align: middle;
-}
-    </style>
-    """,unsafe_allow_html=True)
-
-st.markdown("""
-    <style>
-   div.css-m9mqwd.e1tzin5v1{
-    background-color: #070D1C;
-    padding: 0;
-    vertical-align: middle;
-}
-    </style>
-    """,unsafe_allow_html=True)
-
-st.markdown("""
-    <style>
-   div.css-1wk3dql.e1tzin5v1{
-    background-color: #070D1C;
-    padding: 0;
-    vertical-align: middle;
-}
-    </style>
-    """,unsafe_allow_html=True)
-
-st.markdown("""
-    <style>
-   div.css-115gedg.e1tzin5v1{
-    background-color: #070D1C;
-    padding: 0;
-    vertical-align: middle;
-}
-    </style>
-    """,unsafe_allow_html=True)
-
-st.markdown("""
-    <style>
-   div.css-1kb5vwi.e1tzin5v1{
-    background-color: #070D1C;
-    padding: 0;
-}
-    </style>
-    """,unsafe_allow_html=True)
-
-st.markdown("""
-    <style>
-   div.css-1cwt8z2.e1tzin5v1{
-    background-color: #070D1C;
-    padding: 0;
-    vertical-align: middle;
-}
-    </style>
-    """,unsafe_allow_html=True)
-
+# Background for Right side Icons
 st.markdown("""
     <style>
    div.css-1l269bu.e1tzin5v1{
@@ -271,7 +249,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
-
+#Background for patient icon
 st.markdown("""
     <style>
    div.css-103uxol.e1tzin5v1{
@@ -282,29 +260,18 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
-
+#Background for Patient is Ventilated
 st.markdown("""
     <style>
    div.css-949r0i.e1tzin5v1{
     background-color: #9EB8F5;
-    border: 1px solid black;
     border-radius: 8px;
 }
     </style>
     """,unsafe_allow_html=True)
 
 
-st.markdown("""
-    <style>
-   div.css-1l269bu.e1tzin5v1{
-    background-color: #070D1C;
-    text-align: center;
-    justify-content: center;
-    vertical-align: middle
-}
-    </style>
-    """,unsafe_allow_html=True)
-
+#Modes background colour
 st.markdown("""
     <style>
    div.css-1m8p54g.e1tzin5v1{
@@ -315,16 +282,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
-st.markdown("""
-    <style>
-   div.css-1l269bu.e1tzin5v1{
-    background-color: #070D1C;
-    padding: 0;
-    vertical-align: middle;
-}
-    </style>
-    """,unsafe_allow_html=True)
-
+#Plotting colour
 st.markdown("""
     <style>
    canvas.marks{
@@ -338,6 +296,7 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
+#Background colour plotting box
 st.markdown("""
     <style>
     h1#inspiration-flow{
@@ -353,6 +312,8 @@ st.markdown("""
 
 while True:
     try:  
+
+        #Receiving value through websocket
         message = ws.recv()
         message1 = ws1.recv() 
         data = json.loads(message)
@@ -364,15 +325,17 @@ while True:
             elif counter==9:
                 counter = 0
                 a.append(data)
+
                 # Update latest value display
-                last_insp_flow_value.markdown("<p style='font-size:36px;color: #80ff80;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[4]), unsafe_allow_html=True)
-                last_awp_value.markdown("<p style='font-size:36px;color: #FFFFFF;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[0]), unsafe_allow_html=True)
-                last_awp1_value.markdown("<p style='font-size:36px;color: #ff904f;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[1]), unsafe_allow_html=True)
-                last_awp2_value.markdown("<p style='font-size:36px;color: #ff904f;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[5]), unsafe_allow_html=True)
-                last_awp3_value.markdown("<p style='font-size:36px;color: #ff904f;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[7]), unsafe_allow_html=True)
-                last_awp4_value.markdown("<p style='font-size:36px;color: #80ff80;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[8]), unsafe_allow_html=True)
-                last_awp5_value.markdown("<p style='font-size:36px;color: #87CEEB;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[2]), unsafe_allow_html=True)
-                last_awp6_value.markdown("<p style='font-size:36px;color: #87CEEB;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[3]), unsafe_allow_html=True)
+                last_insp_flow_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #80ff80;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[4]), unsafe_allow_html=True)
+                last_awp_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #FFFFFF;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[0]), unsafe_allow_html=True)
+                last_awp1_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #ff904f;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[1]), unsafe_allow_html=True)
+                last_awp2_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #ff904f;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[5]), unsafe_allow_html=True)
+                last_awp3_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #ff904f;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[7]), unsafe_allow_html=True)
+                last_awp4_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #80ff80;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[8]), unsafe_allow_html=True)
+                last_awp5_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #87CEEB;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[2]), unsafe_allow_html=True)
+                last_awp6_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #87CEEB;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[3]), unsafe_allow_html=True)
+                
                 # Update chart
                 for i in range(10):
                     init_time=t.time()    
