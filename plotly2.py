@@ -62,9 +62,10 @@ with col5:
      st.markdown("<h1 style='font-size:20px;text-align: center; color: #FFFFFF;'>Bi-Level</h1>", unsafe_allow_html=True)
 
 #Second Row Configuration
-First_Parameter = st.markdown("<h1 style='font-size:20px;text-align: left; color: #ff904f;width: 940px;'>INSPIRATION FLOW</h1>", unsafe_allow_html=True)
+First_Parameter = st.markdown("<h1 style='font-size:20px;text-align: left; color: #ff904f;width: 940px;'>FLOW</h1>", unsafe_allow_html=True)
 chart_, values_container = st.columns([3, 1])
 chart_container,null1 = chart_.columns([99,1])
+Second_parameter = st.markdown("<h1 style='font-size:20px;text-align: left; color: #ff904f;width: 940px;'>VOLUME</h1>", unsafe_allow_html=True)
 chart_1, values_container1 = st.columns([3, 1])
 chart_container1,null1 = chart_.columns([99,1])
 insp_flow_container,awp_container = values_container.columns(2)
@@ -77,10 +78,14 @@ chart1=chart_container1.empty()
 websocket.enableTrace(True)
 ws = websocket.WebSocket()
 ws1 = websocket.WebSocket()
+ws2 = websocket.WebSocket()
 ws.connect("wss://i7kggwivc5.execute-api.us-west-2.amazonaws.com/production")
 ws1.connect("wss://fr21il5ko7.execute-api.us-west-2.amazonaws.com/production")
+ws2.connect("wss://svqvm4up0e.execute-api.us-west-2.amazonaws.com/production")
 df_Inspiration_Flow = pd.DataFrame(columns=["Units","Inspiration_Flow"])
+df_Volume = pd.DataFrame(columns=["Units","Volume"])
 a=[]
+b=[]
 n=0
 
 #Creating containers for the grid
@@ -174,6 +179,14 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
+#Background colour for Volume
+st.markdown("""
+    <style>
+   h2#volume{
+    background-color: #070D1C;
+}
+    </style>
+    """,unsafe_allow_html=True)
 #Background colour for RR
 st.markdown("""
     <style>
@@ -285,21 +298,22 @@ st.markdown("""
 #Plotting colour
 st.markdown("""
     <style>
-   canvas.marks{
-    border-bottom-color: #535B6B;
-    border-right-color: #535B6B;
+   div.user-select-none.svg-container{
+    # border-bottom-color: #535B6B;
+    # border-right-color: #535B6B;
     border-left-color: #535B6B;
-    border-right-style: solid;
-    border-bottom-style: solid;
+    # border-right-style: solid;
+    # border-bottom-style: solid;
     border-left-style: solid;
 }
     </style>
     """,unsafe_allow_html=True)
 
+
 #Background colour plotting box
 st.markdown("""
     <style>
-    h1#inspiration-flow{
+    h1#flow{
     border-top-color:#535B6B;
     border-right-color: #535B6B;
     border-left-color: #535B6B;
@@ -316,15 +330,20 @@ while True:
         #Receiving value through websocket
         message = ws.recv()
         message1 = ws1.recv() 
+        message2 = ws2.recv()
         data = json.loads(message)
         data1 = json.loads(message1)
+        data2 = json.loads(message2)
         if n<=160:
             if counter<9:
                 a.append(data)
+                b.append(data2)
                 counter=counter+1
+
             elif counter==9:
                 counter = 0
                 a.append(data)
+                b.append(data2)
 
                 # Update latest value display
                 last_insp_flow_value.markdown("<p style='font-size:36px;gap: 0.1rem;color: #80ff80;font-synthesis: bold;text-align:center;'>{}</p>".format(data1[4]), unsafe_allow_html=True)
@@ -338,18 +357,21 @@ while True:
                 
                 # Update chart
                 for i in range(10):
-                    init_time=t.time()    
+                    # init_time=t.time()    
                     df_Inspiration_Flow = df_Inspiration_Flow.append({"Units":n+i, "Inspiration_Flow": a[i]}, ignore_index=True)
-                    # chart.altair_chart((alt.Chart(df_Inspiration_Flow.tail(160)).mark_area(color='#ff904f').encode(x='Units',y=alt.Y('Inspiration_Flow', scale=alt.Scale(domain=[0,35])))).properties(width=940,height=250).configure_axis(grid=False).configure_axisY(grid=True))
                      # Update the plot with the new data
-                    fig = px.line(df_Inspiration_Flow.tail(160),x="Units", y="Inspiration_Flow")
+                    fig = px.area(df_Inspiration_Flow.tail(161),x="Units",y="Inspiration_Flow",width=900,height=250)
                     # Update the placeholder with the new plot
-                    chart.plotly_chart(fig,use_container_width=True)
-                    final_time=t.time()
-                    time_taken=(final_time-init_time)
-                    rem_time=np.absolute(0.05-time_taken)
-                    t.sleep(rem_time)   
-                print("Insp_Flow =",a)
+                    chart.plotly_chart(fig)
+                    df_Volume=df_Volume.append({"Units":n+i, "Volume": b[i]}, ignore_index=True)
+                    fig1 = px.area(df_Volume.tail(161),x="Units",y="Volume",width=900,height=250)
+                    # Update the placeholder with the new plot
+                    chart1.plotly_chart(fig1)
+
+                    # final_time=t.time()
+                    # time_taken=(final_time-init_time)
+                    # rem_time=np.absolute(0.05-time_taken)
+                    # t.sleep(rem_time)   
                 a.clear()
                 n=n+10
         elif n>160:
