@@ -59,21 +59,21 @@ with col1:
 with col4:
     st.markdown("<h1 style='font-size:28px;text-align: center; color: #000000;'>Patient is Ventilated</h1>", unsafe_allow_html=True)
 with col5:
-     st.markdown("<h1 style='font-size:20px;text-align: center; color: #FFFFFF;'>Bi-Level</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='font-size:20px;text-align: center; color: #FFFFFF;'>Bi-Level</h1>", unsafe_allow_html=True)
 
 #Second Row Configuration
-First_Parameter = st.markdown("<h1 style='font-size:20px;text-align: left; color: #ff904f;width: 940px;'>FLOW</h1>", unsafe_allow_html=True)
+First_Parameter = st.markdown("<h1 style='font-size:20px;text-align: left; color: #ff904f;width: 946px;'>FLOW</h1>", unsafe_allow_html=True)
 chart_, values_container = st.columns([3, 1])
 chart_container,null1 = chart_.columns([99,1])
-Second_parameter = st.markdown("<h1 style='font-size:20px;text-align: left; color: #ff904f;width: 940px;'>VOLUME</h1>", unsafe_allow_html=True)
-chart_1, values_container1 = st.columns([3, 1])
-chart_container1,null1 = chart_.columns([99,1])
+# Second_parameter = st.markdown("<h1 style='font-size:20px;text-align: left; color: #ff904f;width: 940px;'>VOLUME</h1>", unsafe_allow_html=True)
+# chart_1, values_container1 = st.columns([3, 1])
+# chart_container1,null1 = chart_.columns([99,1])
 insp_flow_container,awp_container = values_container.columns(2)
 awp_container1,awp_container2=values_container.columns(2)
 awp_container3, awp_container4= values_container.columns(2)
-awp_container5, awp_container6 = values_container1.columns(2)
+awp_container5, awp_container6 = values_container.columns(2)
 chart = chart_container.empty()
-chart1=chart_container1.empty()
+chart1=chart_container.empty()
 #Websocket connection establishment
 websocket.enableTrace(True)
 ws = websocket.WebSocket()
@@ -295,20 +295,47 @@ st.markdown("""
     </style>
     """,unsafe_allow_html=True)
 
+# #Plotting colour
+# st.markdown("""
+#     <style>
+#    div.user-select-none.svg-container{
+#     # border-bottom-color: #535B6B;
+#     # border-right-color: #535B6B;
+#     border-left-color: #535B6B;
+#     # border-right-style: solid;
+#     # border-bottom-style: solid;
+#     border-left-style: solid;
+# }
+#     </style>
+#     """,unsafe_allow_html=True)
+
 #Plotting colour
 st.markdown("""
     <style>
-   div.user-select-none.svg-container{
-    # border-bottom-color: #535B6B;
-    # border-right-color: #535B6B;
+   div.css-1f297am.e1tzin5v0{
+    border-bottom-color: #535B6B;
+    border-right-color: #535B6B;
     border-left-color: #535B6B;
-    # border-right-style: solid;
-    # border-bottom-style: solid;
+    border-right-style: solid;
+    border-bottom-style: solid;
     border-left-style: solid;
 }
     </style>
     """,unsafe_allow_html=True)
 
+# #Plotting colour
+# st.markdown("""
+#     <style>
+#    div.css-1a32fsj.e19lei0e0:nth-last-of-type(n){
+#     border-bottom-color: #535B6B;
+#     # border-right-color: #535B6B;
+#     # border-left-color: #535B6B;
+#     # border-right-style: solid;
+#     border-bottom-style: solid;
+#     # border-left-style: solid;
+# }
+#     </style>
+#     """,unsafe_allow_html=True)
 
 #Background colour plotting box
 st.markdown("""
@@ -359,20 +386,34 @@ while True:
                 for i in range(10):
                     # init_time=t.time()    
                     df_Inspiration_Flow = df_Inspiration_Flow.append({"Units":n+i, "Inspiration_Flow": a[i]}, ignore_index=True)
+                    print(df_Inspiration_Flow.shape)
+                    if len(df_Inspiration_Flow) >= 1000:
+                        # Delete the initial 500 rows using iloc
+                        df_Inspiration_Flow = df_Inspiration_Flow.iloc[500:]
+
+                        # Break out of the loop since the condition is met
+                        break
                      # Update the plot with the new data
                     fig = px.area(df_Inspiration_Flow.tail(161),x="Units",y="Inspiration_Flow",width=900,height=250)
                     # Update the placeholder with the new plot
-                    chart.plotly_chart(fig)
+                    chart.plotly_chart(fig.update_traces(line_color='orange').update_layout(yaxis_range=[0,120]))
                     df_Volume=df_Volume.append({"Units":n+i, "Volume": b[i]}, ignore_index=True)
+                    if len(df_Volume) >= 1000:
+                        # Delete the initial 500 rows using iloc
+                        df_Volume = df_Volume.iloc[500:]
+
+                        # Break out of the loop since the condition is met
+                        break
                     fig1 = px.area(df_Volume.tail(161),x="Units",y="Volume",width=900,height=250)
                     # Update the placeholder with the new plot
-                    chart1.plotly_chart(fig1)
+                    chart1.plotly_chart(fig1.update_layout(yaxis_range=[0,2000]))
 
                     # final_time=t.time()
                     # time_taken=(final_time-init_time)
                     # rem_time=np.absolute(0.05-time_taken)
                     # t.sleep(rem_time)   
                 a.clear()
+                b.clear()
                 n=n+10
         elif n>160:
             n=1 
